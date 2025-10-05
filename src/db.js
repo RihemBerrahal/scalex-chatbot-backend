@@ -5,8 +5,17 @@ import path from "path";
 // 🟢 Use Render persistent disk or fallback local file
 const DB_PATH = process.env.DB_PATH || path.join(process.cwd(), "scalex.db");
 
-// Make sure the folder exists (Render mounts /data)
-fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
+// Make sure the folder exists (skip /data on Render to avoid EACCES)
+const dir = path.dirname(DB_PATH);
+try {
+  fs.mkdirSync(dir, { recursive: true });
+} catch (err) {
+  // Ignore "permission denied" only when trying to mkdir('/data')
+  if (!(err.code === "EACCES" && dir === "/data") && err.code !== "EEXIST") {
+    throw err;
+  }
+}
+
 
 const db = new Database(DB_PATH);
 db.pragma("journal_mode = WAL");
