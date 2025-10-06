@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 
 // 🟢 Use Render persistent disk or fallback local file
-const DB_PATH = process.env.DB_PATH || path.join(process.cwd(), "scalex.db");
+const DB_PATH = path.join(process.cwd(), "scalex.db");
 
 // Make sure the folder exists (skip /data on Render to avoid EACCES)
 fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
